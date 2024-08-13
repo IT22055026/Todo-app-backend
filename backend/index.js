@@ -1,6 +1,9 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import cors from 'cors';
+
+import todoroute from "./routes/ToDoRoute.js";
 
 dotenv.config();
 
@@ -19,6 +22,18 @@ mongoose.connect(mongoURI, {
   .catch((error) => {
     console.error('Error connecting to MongoDB:', error);
   });
+
+app.use(express.json());
+app.use(cors());
+
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+}));
+
+
+app.use('/todoRecodes', todoroute);
 
 
 app.listen(PORT, () => console.log(`Listening on: ${PORT}`));
