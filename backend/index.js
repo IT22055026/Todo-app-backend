@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 
 import todoroute from "./routes/ToDoRoute.js";
+import { protect } from "./middleware/middleware.js"
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.use(cors({
 
 
 app.use('/todoRecodes', todoroute);
+app.use('/todoRecodes', protect, todoroute);
 
 
 app.listen(PORT, () => console.log(`Listening on: ${PORT}`));
