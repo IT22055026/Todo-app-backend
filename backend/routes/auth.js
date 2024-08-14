@@ -7,11 +7,51 @@ dotenv.config();
 
 const router = express.Router();
 
+// Function to validate the password
+function validatePassword(password) {
+  const errors = [];
+
+  if (password.length < 8) {
+    errors.push('Password must be at least 8 characters long');
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    errors.push('Password must contain at least one uppercase letter');
+  }
+
+  if (!/[a-z]/.test(password)) {
+    errors.push('Password must contain at least one lowercase letter');
+  }
+
+  if (!/[0-9]/.test(password)) {
+    errors.push('Password must contain at least one number');
+  }
+
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    errors.push('Password must contain at least one special character');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+  };
+}
+
 // Register a new user
 router.post('/register', async (req, res) => {
     console.log("Register route hit");
-    
+
     const { username, password } = req.body;
+
+    if (!username || typeof username !== 'string' || username.trim().length === 0) {
+        return res.status(400).json({ message: "Invalid username" });
+    }
+
+    const { isValid, errors } = validatePassword(password);
+
+    if (!isValid) {
+        return res.status(400).json({ message: "Password validation failed", errors });
+    }
 
     try {
         const userExists = await User.findOne({ username });
@@ -34,9 +74,16 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// Login a user and return a JWT
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
+    // Validate input fields
+    if (!username || typeof username !== 'string' || username.trim().length === 0) {
+        return res.status(400).json({ message: "Invalid username" });
+    }
+
+    if (!password || typeof password !== 'string' || password.trim().length === 0) {
+        return res.status(400).json({ message: "Password is required" });
+    }
 
     try {
         const user = await User.findOne({ username });
