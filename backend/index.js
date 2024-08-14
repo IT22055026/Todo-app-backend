@@ -5,6 +5,7 @@ import cors from 'cors';
 
 import todoroute from "./routes/ToDoRoute.js";
 import { protect } from "./middleware/middleware.js"
+import authRoute from "./routes/auth.js";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ mongoose.connect(mongoURI, {
 
 app.use(express.json());
 app.use(cors());
+app.use('/auth', authRoute);
 
 app.use(cors({
     origin: '*',
